@@ -1,11 +1,8 @@
-package ru.raiffeisen.demo.Model;
-
+package ru.raiffeisen.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import ru.raiffeisen.demo.Role;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,28 +10,30 @@ import java.util.List;
 @Entity
 @Data
 @Builder
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    private String content;
+
+    private String title;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany
-    @JoinColumn(name="chat.id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "chat_id")
     @OrderBy("createdAt ASC")
     private List<ChatEntry> history;
 
-    public void addEntry(String prompt, Role role){
-        history.add(ChatEntry.builder().content(prompt).role(role).builder);
+    public void addEntry(String prompt, Role role) {
+        history.add(ChatEntry.builder().content(prompt).role(role).build());
     }
 
     public void addEntry(ChatEntry chatEntry) {
-
+        history.add(chatEntry);
     }
 }
